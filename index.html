@@ -3,30 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Simple Static Website & Drive</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Document Storage</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            margin: 10px 0;
+        }
+        a {
+            text-decoration: none;
+            color: blue;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
-    <header>
-        <h1>Welcome to My Simple Drive</h1>
-    </header>
-    <nav>
-        <a href="#about">About</a>
-        <a href="#drive">Drive</a>
-    </nav>
-    <section id="about">
-        <h2>About This Site</h2>
-        <p>This is a simple static website. You can upload files here!</p>
-    </section>
-    <section id="drive">
-        <h2>File Upload</h2>
-        <input type="file" id="fileInput" />
-        <button id="uploadButton">Upload</button>
-        <div id="fileList"></div>
-    </section>
-    <footer>
-        <p>&copy; 2024 My Simple Static Website</p>
-    </footer>
-    <script src="script.js"></script>
+    <h1>Stored Documents</h1>
+    <ul id="fileList"></ul>
+
+    <script>
+        const GITHUB_USERNAME = 'yourusername'; // replace with your GitHub username
+        const REPO_NAME = 'document-storage'; // replace with your repository name
+        const FILES_PATH = ''; // path to files if they're in a folder
+
+        async function fetchFiles() {
+            const url = `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/${FILES_PATH}`;
+            const response = await fetch(url);
+            const data = await response.json();
+            const fileList = document.getElementById('fileList');
+
+            // Check if the response is an array (valid files)
+            if (Array.isArray(data)) {
+                data.forEach(file => {
+                    if (file.type === 'file') {
+                        const li = document.createElement('li');
+                        const link = document.createElement('a');
+                        link.href = file.download_url; // Link to download the file
+                        link.textContent = file.name; // Name of the file
+                        link.target = "_blank"; // Open in a new tab
+                        li.appendChild(link);
+                        fileList.appendChild(li);
+                    }
+                });
+            } else {
+                fileList.innerHTML = '<li>No files found.</li>';
+            }
+        }
+
+        // Call the function to fetch files
+        fetchFiles();
+    </script>
 </body>
 </html>
